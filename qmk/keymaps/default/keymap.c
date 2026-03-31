@@ -15,14 +15,14 @@ enum custom_keycodes {
     EMACS = SAFE_RANGE,
 };
 
-static bool aorazer_os_is_mac = false;
+static bool aovista_os_is_mac = false;
 static bool emacs_held = false;
 
 bool process_detected_host_os_user(os_variant_t detected_os) {
     if (detected_os == OS_MACOS || detected_os == OS_IOS) {
-        aorazer_os_is_mac = true;
+        aovista_os_is_mac = true;
     } else if (detected_os == OS_WINDOWS || detected_os == OS_LINUX) {
-        aorazer_os_is_mac = false;
+        aovista_os_is_mac = false;
     }
     return true;
 }
@@ -61,9 +61,9 @@ static bool send_emacs_combo(uint16_t keycode, keyrecord_t *record) {
             return false;
         default:
             // Non-special keys: apply Ctrl (Win/Linux) or GUI (Mac) and send
-            register_code(aorazer_os_is_mac ? KC_LGUI : KC_LCTL);
+            register_code(aovista_os_is_mac ? KC_LGUI : KC_LCTL);
             tap_code(keycode);
-            unregister_code(aorazer_os_is_mac ? KC_LGUI : KC_LCTL);
+            unregister_code(aovista_os_is_mac ? KC_LGUI : KC_LCTL);
             return false;
     }
 }

@@ -1,5 +1,5 @@
-# Aorazer
-**アオレイザー** — 左右分割キーボードのファームウェア・設計リポジトリ
+# Aovista
+**アオビスタ** — 左右分割キーボードのファームウェア・設計リポジトリ
 
 天を仰ぐ2つのジョイスティックが特徴の左右対称性と身体性を損なわない入力体験を重視した自作キーボード。
 
@@ -46,13 +46,13 @@
 
 ```
 qmk/
-├── aorazer.h
+├── aovista.h
 ├── keyboard.json
 ├── keymaps/
 │   └── default/
 │       └── keymap.c
 └── vial/
-    ├── aorazer_via_design_minimal_v2.json
+    ├── aovista_via_design_minimal_v2.json
     ├── config.h
     └── rules.mk
 ```
