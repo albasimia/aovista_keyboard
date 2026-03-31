@@ -12,6 +12,11 @@
     "mousekey": true,
     "nkro": true
   },
+  "encoder": {
+    "rotary": [
+      {"pin_a": "GP13", "pin_b": "GP14"}
+    ]
+  },
   "split": {
     "enabled": true,
     "soft_serial_pin": "GP16",

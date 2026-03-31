@@ -1,36 +1,18 @@
 #include QMK_KEYBOARD_H
 
-// Day1 scaffold: joystick / RGB logic intentionally omitted.
-
-#ifndef KC_HENK
-#    define KC_HENK KC_NO
-#endif
-#ifndef KC_MHEN
-#    define KC_MHEN KC_NO
-#endif
-#ifndef KC_HAEN
-#    define KC_HAEN KC_NO
-#endif
-#ifndef KC_KANA
-#    define KC_KANA KC_NO
-#endif
-
 enum layers {
     _BASE,
     _FN,
-    _SEL,
+    _L2,
+    _L3,
+    _L4,
+    _L5,
+    _L6,
+    _L7,
 };
 
 enum custom_keycodes {
     EMACS = SAFE_RANGE,
-    APP_NEXT,
-    APP_PREV,
-    APP_OK,
-    TAB_NEXT,
-    TAB_PREV,
-    TAB_CLOSE,
-    OS_WIN,
-    OS_MAC,
 };
 
 static bool aorazer_os_is_mac = false;
@@ -60,6 +42,10 @@ static bool send_emacs_combo(uint16_t keycode, keyrecord_t *record) {
         case KC_H:
             tap_code(KC_BSPC);
             return false;
+        case KC_K:
+            tap_code16(S(KC_END));
+            tap_code(KC_DEL);
+            return false;
         case KC_B:
             tap_code(KC_LEFT);
             return false;
@@ -71,21 +57,6 @@ static bool send_emacs_combo(uint16_t keycode, keyrecord_t *record) {
             return false;
         case KC_N:
             tap_code(KC_DOWN);
-            return false;
-        case KC_J:
-            tap_code(KC_F6);
-            return false;
-        case KC_K:
-            tap_code(KC_F7);
-            return false;
-        case KC_L:
-            tap_code(KC_F8);
-            return false;
-        case KC_SCLN:
-            tap_code(KC_F9);
-            return false;
-        case KC_QUOT:
-            tap_code(KC_F10);
             return false;
         default:
             return true;
@@ -107,121 +78,73 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 emacs_held = false;
             }
             return false;
-
-        case APP_NEXT:
-            if (record->event.pressed) {
-                if (aorazer_os_is_mac) {
-                    register_mods(MOD_BIT(KC_LGUI));
-                    tap_code(KC_TAB);
-                    unregister_mods(MOD_BIT(KC_LGUI));
-                } else {
-                    register_mods(MOD_BIT(KC_LALT));
-                    tap_code(KC_TAB);
-                    unregister_mods(MOD_BIT(KC_LALT));
-                }
-            }
-            return false;
-
-        case APP_PREV:
-            if (record->event.pressed) {
-                if (aorazer_os_is_mac) {
-                    register_mods(MOD_BIT(KC_LGUI) | MOD_BIT(KC_LSFT));
-                    tap_code(KC_TAB);
-                    unregister_mods(MOD_BIT(KC_LGUI) | MOD_BIT(KC_LSFT));
-                } else {
-                    register_mods(MOD_BIT(KC_LALT) | MOD_BIT(KC_LSFT));
-                    tap_code(KC_TAB);
-                    unregister_mods(MOD_BIT(KC_LALT) | MOD_BIT(KC_LSFT));
-                }
-            }
-            return false;
-
-        case APP_OK:
-            if (record->event.pressed) {
-                tap_code(KC_ENT);
-            }
-            return false;
-
-        case TAB_NEXT:
-            if (record->event.pressed) {
-                if (aorazer_os_is_mac) {
-                    register_mods(MOD_BIT(KC_LCTL));
-                    tap_code(KC_TAB);
-                    unregister_mods(MOD_BIT(KC_LCTL));
-                } else {
-                    register_mods(MOD_BIT(KC_LCTL));
-                    tap_code(KC_PGDN);
-                    unregister_mods(MOD_BIT(KC_LCTL));
-                }
-            }
-            return false;
-
-        case TAB_PREV:
-            if (record->event.pressed) {
-                if (aorazer_os_is_mac) {
-                    register_mods(MOD_BIT(KC_LCTL) | MOD_BIT(KC_LSFT));
-                    tap_code(KC_TAB);
-                    unregister_mods(MOD_BIT(KC_LCTL) | MOD_BIT(KC_LSFT));
-                } else {
-                    register_mods(MOD_BIT(KC_LCTL));
-                    tap_code(KC_PGUP);
-                    unregister_mods(MOD_BIT(KC_LCTL));
-                }
-            }
-            return false;
-
-        case TAB_CLOSE:
-            if (record->event.pressed) {
-                register_mods(MOD_BIT(aorazer_os_is_mac ? KC_LGUI : KC_LCTL));
-                tap_code(KC_W);
-                unregister_mods(MOD_BIT(aorazer_os_is_mac ? KC_LGUI : KC_LCTL));
-            }
-            return false;
-
-        case OS_WIN:
-            if (record->event.pressed) aorazer_os_is_mac = false;
-            return false;
-        case OS_MAC:
-            if (record->event.pressed) aorazer_os_is_mac = true;
-            return false;
     }
 
     return true;
 }
 
-#ifdef ENCODER_ENABLE
-bool encoder_update_user(uint8_t index, bool clockwise) {
-    if (index == 0) {
-        tap_code16(clockwise ? APP_NEXT : APP_PREV);
-    } else if (index == 1) {
-        tap_code16(clockwise ? TAB_NEXT : TAB_PREV);
-    }
-    return false;
-}
-#endif
-
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT(
-        KC_4,    KC_5,    KC_6,    KC_3,    KC_GRV,  KC_1,    KC_2,               KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_DEL,
-        KC_E,    KC_R,    KC_T,    KC_W,    KC_PGUP, KC_TAB,  KC_Q,               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC,
-        KC_D,    KC_F,    KC_G,    KC_S,    KC_PGDN, EMACS,   KC_A,               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT, KC_BSLS,
-        KC_C,    KC_V,    KC_B,    KC_X,    KC_HOME, KC_LSFT, KC_Z,               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_UP,   KC_RSFT,
-        KC_NO,   KC_SPC,  KC_ESC,  MO(_FN), KC_LCTL, KC_LALT, KC_LGUI, KC_END,   KC_ENT,  KC_SPC,  KC_BSPC, KC_RGUI, KC_RALT, KC_LEFT, KC_DOWN, KC_RGHT
+        KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,      KC_6,    KC_NO,              KC_NO,   KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_DEL,
+        KC_PGUP, KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,      KC_T,    TG(_L2),            TG(_L5), KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC,
+        KC_PGDN, EMACS,   KC_A,    KC_S,    KC_D,    KC_F,      KC_G,    TG(_L3),            TG(_L6), KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT, KC_BSLS,
+        KC_HOME, KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,      KC_B,    TG(_L4),            TG(_L7), KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_UP,   KC_RSFT,
+        KC_END,  MO(_FN), KC_LCTL, KC_LALT, KC_LGUI, TG(_BASE), KC_SPC, KC_ESC,     KC_ENT,  KC_SPC, KC_BSPC, KC_RGUI, KC_RALT, KC_LEFT, KC_DOWN, KC_RGHT
     ),
 
     [_FN] = LAYOUT(
-        KC_F4,   KC_F5,   KC_F6,   KC_F3,   KC_F11,  KC_F1,   KC_F2,              KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_DEL,
-        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,            KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,            KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_VOLU, KC_MSTP, KC_TRNS,
-        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,            KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, OS_WIN,  KC_BRIU, OS_MAC,
+        KC_TRNS, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_NO,     KC_NO,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_DEL,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_VOLU, KC_MSTP, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRIU, KC_TRNS, KC_TRNS,
         KC_NO,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_LEFT, KC_BRID, KC_RGHT
     ),
 
-    [_SEL] = LAYOUT(
-        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,               KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
-        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,               KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
-        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,               KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
-        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,               KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
-        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO, KC_NO,       KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO
+    [_L2] = LAYOUT(
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO,     KC_NO,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
+    ),
+
+    [_L3] = LAYOUT(
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO,     KC_NO,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
+    ),
+
+    [_L4] = LAYOUT(
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO,     KC_NO,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
+    ),
+
+    [_L5] = LAYOUT(
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO,     KC_NO,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
+    ),
+
+    [_L6] = LAYOUT(
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO,     KC_NO,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
+    ),
+
+    [_L7] = LAYOUT(
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO,     KC_NO,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
     )
 };
